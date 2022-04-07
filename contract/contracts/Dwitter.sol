@@ -11,9 +11,16 @@ contract Dwitter{
         string bio;
         string avatar;
     }
+    struct Dweet {
+        address author;
+        string content;
+        uint timestamp;
+        uint likes;
+    }
 
     mapping(address => string) public usernames;
     mapping(string => User) public users;
+    Dweet[] public dweets;
 
     function signup(string memory _username, string memory _name, string memory _bio, string memory _avatar) public {
         require(bytes(usernames[msg.sender]).length == 0, "User already exists");
@@ -31,5 +38,20 @@ contract Dwitter{
 
     function getUser(address _wallet) public view returns (User memory) {
         return users[usernames[_wallet]];
+    }
+
+    function postDweet(string memory _content) public {
+        require(bytes(usernames[msg.sender]).length > 0, "You must sign up to post a dweer.");
+        require(bytes(_content).length > 0, "I'm sure your thoughts are not empty. Dweet something out. It cannot be empty");
+        require(bytes(_content).length <= 140, "Dweet is too long. Please keep it under 140 characters.");
+
+        Dweet memory dweet = Dweet({
+            author: msg.sender, content: _content, timestamp: block.timestamp, likes: 0
+        });
+        dweets.push(dweet);
+    }
+
+    function getDweets() public view returns (Dweet[] memory) {
+        return dweets;
     }
 }

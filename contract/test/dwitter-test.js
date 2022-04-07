@@ -37,5 +37,13 @@ describe("Dwitter", function () {
         .signup("abhi", "Abhish", "Some other bio", "someAvatar")
     ).to.be.revertedWith("Username is taken, please try another one.");
     console.log("Test username is taken error");
+
+    await dwitter.postDweet("Hello world!");
+    expect((await dwitter.dweets(0)).content).to.equal("Hello world!");
+    console.log("Test post dweet is successful");
+
+    const dweets = await dwitter.getDweets();
+    expect((await dweets[0]).content).to.equal("Hello world!");
+    console.log("Test get dweets is successful");
   });
 });

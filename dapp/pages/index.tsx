@@ -1,11 +1,14 @@
 import type { NextPage } from 'next';
 import Head from 'next/head';
+import { useState } from 'react';
 import Button from '../components/Button';
-import SignUpForm from '../components/SignupForm';
+import SignUpForm from '../components/SignUpForm';
 import useDwitter from '../hooks/useDwitter';
 
 const Home: NextPage = () => {
-  const { connect, account, createUser, user } = useDwitter();
+  const { connect, account, createUser, user, postDweet, dweets } =
+    useDwitter();
+  const [dweetContent, setDweetContent] = useState<string>('');
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-black py-2">
@@ -29,13 +32,23 @@ const Home: NextPage = () => {
               <textarea
                 className="ml-4 w-64 rounded-xl"
                 placeholder="What's happening?"
+                value={dweetContent}
+                onChange={(e) => setDweetContent(e.target.value)}
               />
             </div>
             <div className="mt-2 flex w-72 justify-end">
-              <Button label="Dweet" onClick={() => {}} />
+              <Button
+                label="Dweet"
+                onClick={() => {
+                  postDweet(dweetContent);
+                }}
+              />
             </div>
           </>
         )}
+        {dweets.map((dweet) => (
+          <span className="w-64 py-2 px-4 text-white">{dweet.content}</span>
+        ))}
       </main>
 
       <footer className="flex h-24 w-full items-center justify-center text-white">

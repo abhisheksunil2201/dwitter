@@ -3,7 +3,7 @@ import { ethers } from 'ethers';
 import { useEffect, useState } from 'react';
 
 const ContractABI = Dwitter.abi;
-const ContractAddress = '0x5FbDB2315678afecb367f032d93F642f64180aa3';
+const ContractAddress = '0x0165878A594ca255338adfa4d48449f69242Eb8F';
 const Ethereum = typeof window !== 'undefined' && (window as any).ethereum;
 
 const getDwitterContract = () => {
@@ -20,10 +20,18 @@ type User = {
   wallet: string;
 };
 
+type Dweet = {
+  content: string;
+  timestamp: number;
+  author: string;
+  likes: number;
+};
+
 const useDwitter = () => {
   //const Dwitter = getDwitterContract();
   const [currentAccount, setCurrentAccount] = useState<string>('');
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [dweets, setDweets] = useState<Dweet[]>([]);
   const connect = async () => {
     try {
       if (!Ethereum) {
@@ -52,11 +60,13 @@ const useDwitter = () => {
       return;
     }
     connect();
+    getDweets();
   }, []);
 
   useEffect(() => {
     if (currentAccount) {
       getUser();
+      getDweets();
     }
   }, [currentAccount]);
 
@@ -80,7 +90,27 @@ const useDwitter = () => {
     getUser();
   };
 
-  return { connect, account: currentAccount, user: currentUser, createUser };
+  const getDweets = async () => {
+    const contract = getDwitterContract();
+    const dweets = await contract.getDweets();
+    console.log(dweets);
+    setDweets(dweets);
+  };
+
+  const postDweet = async (dweet: string) => {
+    const contract = getDwitterContract();
+    await contract.postDweet(dweet);
+    await getDweets();
+  };
+
+  return {
+    connect,
+    account: currentAccount,
+    user: currentUser,
+    createUser,
+    postDweet,
+    dweets,
+  };
 };
 
 export default useDwitter;
