@@ -3,7 +3,7 @@ import { ethers } from 'ethers';
 import { useEffect, useState } from 'react';
 
 const ContractABI = Dwitter.abi;
-const ContractAddress = '0x5fbdb2315678afecb367f032d93f642f64180aa3';
+const ContractAddress = '0x5FbDB2315678afecb367f032d93F642f64180aa3';
 const Ethereum = typeof window !== 'undefined' && (window as any).ethereum;
 
 const getDwitterContract = () => {
@@ -12,9 +12,18 @@ const getDwitterContract = () => {
   return new ethers.Contract(ContractAddress, ContractABI, signer);
 };
 
+type User = {
+  avatar: string;
+  bio: string;
+  name: string;
+  username: string;
+  wallet: string;
+};
+
 const useDwitter = () => {
   //const Dwitter = getDwitterContract();
   const [currentAccount, setCurrentAccount] = useState<string>('');
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const connect = async () => {
     try {
       if (!Ethereum) {
@@ -45,7 +54,33 @@ const useDwitter = () => {
     connect();
   }, []);
 
-  return { connect, account: currentAccount };
+  useEffect(() => {
+    if (currentAccount) {
+      getUser();
+    }
+  }, [currentAccount]);
+
+  const getUser = async () => {
+    const contract = getDwitterContract();
+    const user = await contract.getUser(currentAccount);
+    const { avatar, bio, name, username, wallet } = user;
+    setCurrentUser({ avatar, bio, name, username, wallet });
+    return user;
+  };
+
+  const createUser = async (
+    username: string,
+    name: string,
+    bio: string,
+    avatar: string
+  ) => {
+    const contract = getDwitterContract();
+    const user = await contract.signup(username, name, bio, avatar);
+    console.log(user);
+    getUser();
+  };
+
+  return { connect, account: currentAccount, user: currentUser, createUser };
 };
 
 export default useDwitter;

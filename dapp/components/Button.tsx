@@ -5,7 +5,7 @@ type Props = {
   onClick: () => void;
 };
 
-export const Button: React.FC<Props> = ({ label, onClick }) => {
+const Button: React.FC<Props> = ({ label, onClick }) => {
   return (
     <button
       className="rounded-full bg-blue-500 py-2 px-4 font-bold text-white hover:bg-blue-700"
@@ -15,3 +15,5 @@ export const Button: React.FC<Props> = ({ label, onClick }) => {
     </button>
   );
 };
+
+export default Button;
