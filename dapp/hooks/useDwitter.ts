@@ -3,7 +3,8 @@ import { ethers } from 'ethers';
 import { useEffect, useState } from 'react';
 
 const ContractABI = Dwitter.abi;
-const ContractAddress = '0x0165878A594ca255338adfa4d48449f69242Eb8F';
+// const ContractAddress = '0x0165878A594ca255338adfa4d48449f69242Eb8F';
+const ContractAddress = '0x849a7124C9A1a18c78d1BEAa223df495952E6A4b';
 const Ethereum = typeof window !== 'undefined' && (window as any).ethereum;
 
 const getDwitterContract = () => {
