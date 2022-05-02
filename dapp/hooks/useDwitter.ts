@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 
 const ContractABI = Dwitter.abi;
 // const ContractAddress = '0x0165878A594ca255338adfa4d48449f69242Eb8F';
-const ContractAddress = '0x849a7124C9A1a18c78d1BEAa223df495952E6A4b';
+const ContractAddress = '0x3B7A089F6ADf5EB372Afe75B020eD7480E9377bc';
 const Ethereum = typeof window !== 'undefined' && (window as any).ethereum;
 
 const getDwitterContract = () => {

@@ -12,10 +12,12 @@ contract Dwitter{
         string avatar;
     }
     struct Dweet {
-        address author;
+        User author;
+        string id;
         string content;
         uint timestamp;
-        uint likes;
+        string[] images;
+        address[] likes;
     }
 
     mapping(address => string) public usernames;
@@ -40,15 +42,37 @@ contract Dwitter{
         return users[usernames[_wallet]];
     }
 
-    function postDweet(string memory _content) public {
-        require(bytes(usernames[msg.sender]).length > 0, "You must sign up to post a dweer.");
-        require(bytes(_content).length > 0, "I'm sure your thoughts are not empty. Dweet something out. It cannot be empty");
+    function postDweet(string memory _content, string memory _id, string[] memory _images) public {
+        require(bytes(usernames[msg.sender]).length > 0, "You must sign up to post a dweet.");
+        require(bytes(_content).length > 0, "I'm sure your thoughts are not empty. Dweet something out.");
         require(bytes(_content).length <= 140, "Dweet is too long. Please keep it under 140 characters.");
+        User memory user = users[usernames[msg.sender]];
 
         Dweet memory dweet = Dweet({
-            author: msg.sender, content: _content, timestamp: block.timestamp, likes: 0
+            author: user, id: _id, content: _content, timestamp: block.timestamp, images: _images, likes: new address[](0)
         });
         dweets.push(dweet);
+    }
+
+    function likeDweet(string memory _id) public {
+        require(bytes(usernames[msg.sender]).length > 0, "You must be signed up to like a dweet");
+        require(bytes(_id).length > 0, "Dweet does not exist");
+        bool add = true;
+        for (uint i = 0; i < dweets.length; i++) {
+            if ((keccak256(abi.encodePacked((dweets[i].id))) == keccak256(abi.encodePacked((_id))))) {
+                for (uint j = 0; j < dweets[i].likes.length; j++) {
+                    if (dweets[i].likes[j] == msg.sender) {
+                        dweets[i].likes[j] = dweets[i].likes[dweets[i].likes.length - 1];
+                        dweets[i].likes.pop();
+                        add = false;
+                    }
+                }
+                if (add) {
+                    dweets[i].likes.push(msg.sender);
+                }
+                return;
+            }
+        }
     }
 
     function getDweets() public view returns (Dweet[] memory) {
